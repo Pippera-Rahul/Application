@@ -7,22 +7,26 @@ app = Flask(__name__)
 
 @app.route('/htop')
 def htop():
-    full_name = "Pippera Rahul" 
-    username = os.getlogin()
-    
-    ist_time = datetime.datetime.utcnow() + datetime.timedelta(hours=5,minutes=30)
-    server_time = ist_time.strftime('%Y-%m-%d %H:%M:%S IST')
+    try:
+        # Get system info
+        name = "Rahul"
+        username = os.getenv("USER") or os.getenv("USERNAME") or "Unknown User"
+        server_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    top_output = subprocess.getoutput("top -b -n 1")
+        # Get top command output
+        top_output = subprocess.getoutput("top -b -n 1")
 
-    response = f"""
-    <h1>Name: {full_name}</h1>
-    <h2>Username: {username}</h2>
-    <h2>Server Time (IST): {server_time}</h2>
-    <pre>{top_output}</pre>
-    """
-    
-    return response
+        # Format output
+        response = f"""
+        <h1>Name: {name}</h1>
+        <h2>Username: {username}</h2>
+        <h3>Server Time: {server_time} (IST)</h3>
+        <pre>{top_output}</pre>
+        """
+        return response
+
+    except Exception as e:
+        return f"<h1>Error: {str(e)}</h1>"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5006)
